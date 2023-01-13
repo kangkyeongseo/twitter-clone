@@ -1,9 +1,16 @@
 import React, { useState } from "react";
+import { db } from "fbase";
+import { collection, addDoc } from "firebase/firestore";
 
 const Home = () => {
   const [tweet, setTweet] = useState("");
-  const onSubmit = (event) => {
+  const onSubmit = async (event) => {
     event.preventDefault();
+    await addDoc(collection(db, "tweets"), {
+      tweet,
+      createdAt: Date.now(),
+    });
+    setTweet("");
   };
   const onChange = (event) => {
     const {
