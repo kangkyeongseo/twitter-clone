@@ -1,7 +1,30 @@
-import React from "react";
+import React, { useState } from "react";
 
 const Home = () => {
-  return <span>Home</span>;
+  const [tweet, setTweet] = useState("");
+  const onSubmit = (event) => {
+    event.preventDefault();
+  };
+  const onChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setTweet(value);
+  };
+  return (
+    <div>
+      <form onSubmit={onSubmit}>
+        <input
+          type="text"
+          onChange={onChange}
+          value={tweet}
+          placeholder="What's on your mind"
+          maxLength={120}
+        />
+        <input type="submit" value="Tweet" />
+      </form>
+    </div>
+  );
 };
 
 export default Home;

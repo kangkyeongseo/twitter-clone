@@ -1,6 +1,6 @@
 import React from "react";
 import { auth } from "fbase";
-import { useLocation, useNavigate, useRoutes } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const navigate = useNavigate();
