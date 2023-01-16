@@ -1,8 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { db } from "fbase";
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  onSnapshot,
+  query,
+  orderBy,
+} from "firebase/firestore";
 
-const Home = () => {
+const Home = ({ userObj }) => {
   const [tweet, setTweet] = useState("");
   const [tweets, setTweets] = useState([]);
   const getTweets = async () => {
@@ -16,13 +23,23 @@ const Home = () => {
     });
   };
   useEffect(() => {
-    getTweets();
+    const q = query(collection(db, "tweets"), orderBy("createdAt", "desc"));
+    onSnapshot(q, (querySnapshot) => {
+      const newTweets = querySnapshot.docs.map((doc) => {
+        return {
+          ...doc.data(),
+          id: doc.id,
+        };
+      });
+      setTweets(newTweets);
+    });
   }, []);
   const onSubmit = async (event) => {
     event.preventDefault();
     await addDoc(collection(db, "tweets"), {
-      tweet,
+      text: tweet,
       createdAt: Date.now(),
+      createdId: userObj.uid,
     });
     setTweet("");
   };
@@ -47,7 +64,7 @@ const Home = () => {
       <div>
         {tweets.map((tweet) => (
           <div key={tweet.id}>
-            <h4>{tweet.tweet}</h4>
+            <h4>{tweet.text}</h4>
           </div>
         ))}
       </div>
