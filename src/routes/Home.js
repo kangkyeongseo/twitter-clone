@@ -9,14 +9,14 @@ import {
   orderBy,
 } from "firebase/firestore";
 import Tweet from "components/Tweet";
-import { ref, uploadString } from "firebase/storage";
+import { getDownloadURL, ref, uploadString } from "firebase/storage";
 import { v4 as uuidv4 } from "uuid";
 
 const Home = ({ userObj }) => {
   const fileInput = useRef();
   const [tweet, setTweet] = useState("");
   const [tweets, setTweets] = useState([]);
-  const [attachment, setAttachment] = useState();
+  const [attachment, setAttachment] = useState("");
   const getTweets = async () => {
     const q = await getDocs(collection(db, "tweets"));
     q.forEach((doc) => {
@@ -41,14 +41,21 @@ const Home = ({ userObj }) => {
   }, []);
   const onSubmit = async (event) => {
     event.preventDefault();
-    const fileRef = ref(storage, `${userObj.uid}/${uuidv4()}`);
-    await uploadString(fileRef, attachment, "data_url");
-    /*     await addDoc(collection(db, "tweets"), {
+    let attachmentUrl = "";
+    if (attachment !== "") {
+      const fileRef = ref(storage, `${userObj.uid}/${uuidv4()}`);
+      const response = await uploadString(fileRef, attachment, "data_url");
+      attachmentUrl = await getDownloadURL(response.ref);
+    }
+    const tweetObj = {
       text: tweet,
       createdAt: Date.now(),
       createdId: userObj.uid,
-    });
-    setTweet(""); */
+      attachmentUrl,
+    };
+    await addDoc(collection(db, "tweets"), tweetObj);
+    setTweet("");
+    setAttachment("");
   };
   const onChange = (event) => {
     const {
