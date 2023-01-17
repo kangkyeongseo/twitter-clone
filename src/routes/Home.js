@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { db } from "fbase";
 import {
   collection,
@@ -11,8 +11,10 @@ import {
 import Tweet from "components/Tweet";
 
 const Home = ({ userObj }) => {
+  const fileInput = useRef();
   const [tweet, setTweet] = useState("");
   const [tweets, setTweets] = useState([]);
+  const [attachment, setAttachment] = useState();
   const getTweets = async () => {
     const q = await getDocs(collection(db, "tweets"));
     q.forEach((doc) => {
@@ -50,6 +52,24 @@ const Home = ({ userObj }) => {
     } = event;
     setTweet(value);
   };
+  const onFileChange = (event) => {
+    const {
+      target: { files },
+    } = event;
+    const theFile = files[0];
+    const reader = new FileReader();
+    reader.onloadend = (finishedEvent) => {
+      const {
+        currentTarget: { result },
+      } = finishedEvent;
+      setAttachment(result);
+    };
+    reader.readAsDataURL(theFile);
+  };
+  const onClearAttachmenat = () => {
+    setAttachment(null);
+    fileInput.current.value = "";
+  };
   return (
     <div>
       <form onSubmit={onSubmit}>
@@ -60,7 +80,19 @@ const Home = ({ userObj }) => {
           placeholder="What's on your mind"
           maxLength={120}
         />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={onFileChange}
+          ref={fileInput}
+        />
         <input type="submit" value="Tweet" />
+        {attachment && (
+          <div>
+            <img src={attachment} width="50px" height="50px" />
+            <button onClick={onClearAttachmenat}>Clear</button>
+          </div>
+        )}
       </form>
       <div>
         {tweets.map((tweet) => (
