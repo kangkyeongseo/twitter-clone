@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { db } from "fbase";
+import { db, storage } from "fbase";
 import {
   collection,
   addDoc,
@@ -9,6 +9,8 @@ import {
   orderBy,
 } from "firebase/firestore";
 import Tweet from "components/Tweet";
+import { ref, uploadString } from "firebase/storage";
+import { v4 as uuidv4 } from "uuid";
 
 const Home = ({ userObj }) => {
   const fileInput = useRef();
@@ -39,12 +41,14 @@ const Home = ({ userObj }) => {
   }, []);
   const onSubmit = async (event) => {
     event.preventDefault();
-    await addDoc(collection(db, "tweets"), {
+    const fileRef = ref(storage, `${userObj.uid}/${uuidv4()}`);
+    await uploadString(fileRef, attachment, "data_url");
+    /*     await addDoc(collection(db, "tweets"), {
       text: tweet,
       createdAt: Date.now(),
       createdId: userObj.uid,
     });
-    setTweet("");
+    setTweet(""); */
   };
   const onChange = (event) => {
     const {
