@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
 
-const Profile = ({ userObj }) => {
+const Profile = ({ userObj, refreshUser }) => {
   const navigate = useNavigate();
   const [newDisplayName, setNewDisplayName] = useState(userObj.displayName);
   const onLogOutClick = async () => {
@@ -34,6 +34,7 @@ const Profile = ({ userObj }) => {
       await updateProfile(auth.currentUser, {
         displayName: newDisplayName,
       });
+      refreshUser();
     }
   };
   return (
