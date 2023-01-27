@@ -1,32 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
-import { db, storage } from "fbase";
-import {
-  collection,
-  addDoc,
-  getDocs,
-  onSnapshot,
-  query,
-  orderBy,
-} from "firebase/firestore";
+import React, { useEffect, useState } from "react";
+import { db } from "fbase";
+import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 import Tweet from "components/Tweet";
-import { getDownloadURL, ref, uploadString } from "firebase/storage";
-import { v4 as uuidv4 } from "uuid";
+import TweetFactory from "components/TweetFactory";
 
 const Home = ({ userObj }) => {
-  const fileInput = useRef();
-  const [tweet, setTweet] = useState("");
   const [tweets, setTweets] = useState([]);
-  const [attachment, setAttachment] = useState("");
-  const getTweets = async () => {
-    const q = await getDocs(collection(db, "tweets"));
-    q.forEach((doc) => {
-      const tweetObject = {
-        ...doc.data(),
-        id: doc.id,
-      };
-      setTweets((prev) => [tweetObject, ...prev]);
-    });
-  };
   useEffect(() => {
     const q = query(collection(db, "tweets"), orderBy("createdAt", "desc"));
     onSnapshot(q, (querySnapshot) => {
@@ -39,72 +18,10 @@ const Home = ({ userObj }) => {
       setTweets(newTweets);
     });
   }, []);
-  const onSubmit = async (event) => {
-    event.preventDefault();
-    let attachmentUrl = "";
-    if (attachment !== "") {
-      const fileRef = ref(storage, `${userObj.uid}/${uuidv4()}`);
-      const response = await uploadString(fileRef, attachment, "data_url");
-      attachmentUrl = await getDownloadURL(response.ref);
-    }
-    const tweetObj = {
-      text: tweet,
-      createdAt: Date.now(),
-      createdId: userObj.uid,
-      attachmentUrl,
-    };
-    await addDoc(collection(db, "tweets"), tweetObj);
-    setTweet("");
-    setAttachment("");
-  };
-  const onChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-    setTweet(value);
-  };
-  const onFileChange = (event) => {
-    const {
-      target: { files },
-    } = event;
-    const theFile = files[0];
-    const reader = new FileReader();
-    reader.onloadend = (finishedEvent) => {
-      const {
-        currentTarget: { result },
-      } = finishedEvent;
-      setAttachment(result);
-    };
-    reader.readAsDataURL(theFile);
-  };
-  const onClearAttachmenat = () => {
-    setAttachment(null);
-    fileInput.current.value = "";
-  };
+
   return (
     <div>
-      <form onSubmit={onSubmit}>
-        <input
-          type="text"
-          onChange={onChange}
-          value={tweet}
-          placeholder="What's on your mind"
-          maxLength={120}
-        />
-        <input
-          type="file"
-          accept="image/*"
-          onChange={onFileChange}
-          ref={fileInput}
-        />
-        <input type="submit" value="Tweet" />
-        {attachment && (
-          <div>
-            <img src={attachment} width="50px" height="50px" />
-            <button onClick={onClearAttachmenat}>Clear</button>
-          </div>
-        )}
-      </form>
+      <TweetFactory userObj={userObj} />
       <div>
         {tweets.map((tweet) => (
           <Tweet
