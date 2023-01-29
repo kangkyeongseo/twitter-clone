@@ -4,6 +4,46 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
+import styled from "styled-components";
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 320px;
+  margin-top: 30px;
+`;
+
+const Input = styled.input`
+  max-width: 320px;
+  padding: 10px;
+  border-radius: 30px;
+  margin-bottom: 10px;
+  font-size: 12px;
+  background-color: rgba(255, 255, 255, 1);
+  color: black;
+`;
+
+const SubmitInput = styled(Input)`
+  text-align: center;
+  background-color: #04aaff;
+  color: white;
+`;
+
+const ErrorMessagea = styled.span`
+  color: tomato;
+  text-align: center;
+  font-size: 12px;
+  font-weight: bold;
+`;
+
+const Switch = styled.span`
+  cursor: pointer;
+  margin-top: 10px;
+  margin-bottom: 50px;
+  font-size: 12px;
+  text-decoration: underline;
+`;
 
 const AuthForm = () => {
   const [email, setEmail] = useState("");
@@ -49,8 +89,8 @@ const AuthForm = () => {
   const toggleAccout = () => setNewAccount((prev) => !prev);
   return (
     <>
-      <form onSubmit={onSubmit}>
-        <input
+      <Form onSubmit={onSubmit}>
+        <Input
           onChange={onChange}
           name="email"
           type="email"
@@ -58,7 +98,7 @@ const AuthForm = () => {
           required
           value={email}
         />
-        <input
+        <Input
           onChange={onChange}
           name="password"
           type="password"
@@ -66,12 +106,15 @@ const AuthForm = () => {
           required
           value={password}
         />
-        <input type="submit" value={newAccout ? "Create Account" : "Login"} />
-        {error}
-      </form>
-      <span onClick={toggleAccout}>
+        <SubmitInput
+          type="submit"
+          value={newAccout ? "Create Account" : "Login"}
+        />
+        <ErrorMessagea>{error}</ErrorMessagea>
+      </Form>
+      <Switch onClick={toggleAccout}>
         {newAccout ? "Login" : "Create Account"}
-      </span>
+      </Switch>
     </>
   );
 };
