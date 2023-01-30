@@ -56,6 +56,10 @@ input {
   all: unset;
   appearance: none;
 }
+
+a {
+  all: unset;
+}
 `;
 
 function App() {
