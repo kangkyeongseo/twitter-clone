@@ -55,10 +55,11 @@ body {
 input {
   all: unset;
   appearance: none;
+  box-sizing: border-box;
 }
-
 a {
-  all: unset;
+  text-decoration: none;
+  color: inherit;
 }
 `;
 

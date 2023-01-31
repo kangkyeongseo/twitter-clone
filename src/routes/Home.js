@@ -3,6 +3,22 @@ import { db } from "fbase";
 import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 import Tweet from "components/Tweet";
 import TweetFactory from "components/TweetFactory";
+import styled from "styled-components";
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const Tweets = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  width: 100%;
+  margin-top: 30px;
+`;
 
 const Home = ({ userObj }) => {
   const [tweets, setTweets] = useState([]);
@@ -20,9 +36,9 @@ const Home = ({ userObj }) => {
   }, []);
 
   return (
-    <div>
+    <Container>
       <TweetFactory userObj={userObj} />
-      <div>
+      <Tweets>
         {tweets.map((tweet) => (
           <Tweet
             key={tweet.id}
@@ -30,8 +46,8 @@ const Home = ({ userObj }) => {
             isOwner={userObj.uid === tweet.createdId ? true : false}
           />
         ))}
-      </div>
-    </div>
+      </Tweets>
+    </Container>
   );
 };
 
