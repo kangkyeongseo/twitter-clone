@@ -3,6 +3,46 @@ import { auth, db } from "fbase";
 import { useNavigate } from "react-router-dom";
 import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
+import styled from "styled-components";
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 90px;
+`;
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 60px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid white;
+`;
+
+const TextInput = styled.input`
+  background-color: white;
+  width: 390px;
+  padding: 10px;
+  border-radius: 30px;
+  text-align: center;
+`;
+
+const SubmitInput = styled(TextInput)`
+  background-color: #04aaff;
+  color: white;
+`;
+
+const LogoutBtn = styled.button`
+  background-color: tomato;
+  color: white;
+  width: 390px;
+  padding: 10px;
+  border: none;
+  border-radius: 30px;
+  text-align: center;
+`;
 
 const Profile = ({ userObj, refreshUser }) => {
   const navigate = useNavigate();
@@ -38,18 +78,18 @@ const Profile = ({ userObj, refreshUser }) => {
     }
   };
   return (
-    <>
-      <form onSubmit={onSubmit}>
-        <input
+    <Container>
+      <Form onSubmit={onSubmit}>
+        <TextInput
           type="text"
           placeholder="Display Name"
           onChange={onChange}
           value={newDisplayName}
         />
-        <input type="submit" value="Update Profile" />
-      </form>
-      <button onClick={onLogOutClick}>Log Out</button>
-    </>
+        <SubmitInput type="submit" value="Update Profile" />
+      </Form>
+      <LogoutBtn onClick={onLogOutClick}>Log Out</LogoutBtn>
+    </Container>
   );
 };
 
